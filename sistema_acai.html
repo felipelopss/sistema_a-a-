@@ -22,32 +22,7 @@
     </style>
 </head>
 <body class="bg-gray-100">
-    
-<script type="module">
-    
-  // Import the functions you need from the SDKs you need
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
-  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-analytics.js";
-  // TODO: Add SDKs for Firebase products that you want to use
-  // https://firebase.google.com/docs/web/setup#available-libraries
 
-  // Your web app's Firebase configuration
-  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-  const firebaseConfig = {
-    apiKey: "AIzaSyCqP99onLtbTZT_wKARPdHtqKdtl7UtFAA",
-    authDomain: "sistema-acai-f92c4.firebaseapp.com",
-    projectId: "sistema-acai-f92c4",
-    storageBucket: "sistema-acai-f92c4.firebasestorage.app",
-    messagingSenderId: "379807353421",
-    appId: "1:379807353421:web:978358fb8b97a576676a04",
-    measurementId: "G-RXHV94GW7Q"
-  };
-
-  // Initialize Firebase
-  const app = initializeApp(firebaseConfig);
-  const analytics = getAnalytics(app);
-</script>
-    
     <div id="loading-overlay" class="fixed inset-0 bg-white bg-opacity-80 z-50 flex items-center justify-center hidden">
         <i class="fas fa-spinner fa-spin text-purple-600 text-5xl"></i>
     </div>
@@ -223,22 +198,21 @@
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail, signOut, onAuthStateChanged, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
         import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, serverTimestamp, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-        const firebaseConfig = typeof __firebase_config !== 'undefined'
-            ? JSON.parse(__firebase_config)
-            : {
-  apiKey: "AIzaSyCqP99onLtbTZT_wKARPdHtqKdtl7UtFAA",
-    authDomain: "sistema-acai-f92c4.firebaseapp.com",
-    projectId: "sistema-acai-f92c4",
-    storageBucket: "sistema-acai-f92c4.firebasestorage.app",
-    messagingSenderId: "379807353421",
-    appId: "1:379807353421:web:978358fb8b97a576676a04",
-    measurementId: "G-RXHV94GW7Q"
-            };
+        // CONFIGURAÇÃO DO FIREBASE - COLE SUAS CHAVES AQUI
+        const firebaseConfig = {
+            apiKey: "AIzaSyCqP99onLtbTZT_wKARPdHtqKdtl7UtFAA",
+            authDomain: "sistema-acai-f92c4.firebaseapp.com",
+            projectId: "sistema-acai-f92c4",
+            storageBucket: "sistema-acai-f92c4.appspot.com", // Corrigido: .appspot.com
+            messagingSenderId: "379807353421",
+            appId: "1:379807353421:web:978358fb8b97a576676a04",
+            measurementId: "G-RXHV94GW7Q"
+        };
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const appId = "sistema-acai-f92c4"; // Usando o Project ID como App ID
         const { jsPDF } = window.jspdf;
 
         // --- Variáveis Globais ---
@@ -285,10 +259,6 @@
             }
         });
         
-        if (typeof __initial_auth_token !== 'undefined') {
-            signInWithCustomToken(auth, __initial_auth_token);
-        }
-
         // --- Lógica de Dados (Firestore) ---
         function listenToData(uid) {
             loadingOverlay.classList.remove('hidden');
