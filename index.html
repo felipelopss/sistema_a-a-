@@ -7,9 +7,8 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
     <style>
         body { font-family: 'Inter', sans-serif; }
         .menu-active { background-color: #4c1d95; color: white; }
@@ -215,7 +214,7 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
         const appId = "sistema-acai-f92c4";
-        const { jsPDF } = window.jspdf;
+        const { jsPDF } = window; // Usar o objeto global do jsPDF
 
         // --- Variáveis Globais ---
         let userId = null;
@@ -490,16 +489,65 @@
         
         document.getElementById('download-pdf-btn').addEventListener('click', () => {
             loadingOverlay.classList.remove('hidden');
-            const content = document.getElementById('pdf-content');
-            html2canvas(content, { scale: 2 }).then(canvas => {
-                const imgData = canvas.toDataURL('image/png');
-                const pdf = new jsPDF({ orientation: 'p', unit: 'mm', format: 'a4' });
-                const pdfWidth = pdf.internal.pageSize.getWidth();
-                const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-                pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
-                pdf.save(`relatorio-acai-control-${new Date().toLocaleDateString('pt-BR').replace(/\//g, '-')}.pdf`);
-                loadingOverlay.classList.add('hidden');
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF({ orientation: 'p', unit: 'mm', format: 'a4' });
+
+            const addText = (text, x, y, size, style) => {
+                pdf.setFontSize(size);
+                pdf.setFont('helvetica', style || 'normal');
+                pdf.text(text, x, y);
+            };
+
+            let y = 15;
+            addText('Relatório Açaí Control Pro', 105, y, 18, 'bold');
+            y += 5;
+            addText(new Date().toLocaleString('pt-BR'), 105, y, 8);
+            y += 15;
+
+            addText('Resumo de Faturamento', 14, y, 14, 'bold');
+            y += 8;
+            
+            pdf.autoTable({
+                startY: y,
+                body: [
+                    ['Faturamento da Semana', document.getElementById('faturamento-semana').textContent],
+                    ['Faturamento do Mês', document.getElementById('faturamento-mes').textContent],
+                    ['Faturamento do Ano', document.getElementById('faturamento-ano').textContent],
+                ],
+                theme: 'grid',
+                styles: { fontSize: 10 },
+                headStyles: { fillColor: [76, 29, 149] },
             });
+            y = pdf.autoTable.previous.finalY + 15;
+
+            const vendasTable = document.getElementById('vendas-detalhadas-table');
+            const despesasTable = document.getElementById('despesas-detalhadas-table');
+
+            addText(`Vendas (${document.getElementById('vendas-periodo-label').textContent})`, 14, y, 14, 'bold');
+            y += 8;
+
+            pdf.autoTable({
+                html: vendasTable,
+                startY: y,
+                theme: 'grid',
+                headStyles: { fillColor: [76, 29, 149] },
+                columnStyles: { 3: { halign: 'center' } }
+            });
+            y = pdf.autoTable.previous.finalY + 15;
+
+            addText(`Despesas (${document.getElementById('despesas-periodo-label').textContent})`, 14, y, 14, 'bold');
+            y += 8;
+
+            pdf.autoTable({
+                html: despesasTable,
+                startY: y,
+                theme: 'grid',
+                headStyles: { fillColor: [220, 38, 38] },
+                columnStyles: { 3: { halign: 'center' } }
+            });
+
+            pdf.save(`relatorio-acai-control-${new Date().toLocaleDateString('pt-BR').replace(/\//g, '-')}.pdf`);
+            loadingOverlay.classList.add('hidden');
         });
         
         // --- Lógica do Menu Mobile ---
