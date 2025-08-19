@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Açaí Control Pro - Com Logotipo</title>
+    <title>Açaí Control Pro - Relatórios Avançados</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -48,6 +48,28 @@
             </div>
         </div>
     </div>
+    
+    <!-- Modal de Opções de PDF -->
+    <div id="pdf-options-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
+        <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+            <div class="mt-3 text-center">
+                <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-purple-100">
+                    <i class="fas fa-file-pdf text-2xl text-purple-600"></i>
+                </div>
+                <h3 class="text-lg leading-6 font-medium text-gray-900 mt-2">Escolha o Relatório para Baixar</h3>
+                <div class="mt-4 px-7 py-3 space-y-3">
+                    <button data-period="semanal" class="pdf-download-option w-full bg-purple-600 text-white py-2 px-4 rounded-md hover:bg-purple-700">Relatório Semanal</button>
+                    <button data-period="mensal" class="pdf-download-option w-full bg-purple-600 text-white py-2 px-4 rounded-md hover:bg-purple-700">Relatório Mensal</button>
+                    <button data-period="anual" class="pdf-download-option w-full bg-purple-600 text-white py-2 px-4 rounded-md hover:bg-purple-700">Relatório Anual</button>
+                </div>
+                <div class="items-center px-4 py-3">
+                    <button id="pdf-options-cancel-btn" class="w-full bg-gray-200 text-gray-800 py-2 px-4 rounded-md hover:bg-gray-300">
+                        Cancelar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Container de Autenticação -->
     <div id="auth-container" class="min-h-screen flex items-center justify-center p-4">
@@ -55,10 +77,8 @@
             <div id="login-form-container">
                 <div class="bg-white p-8 rounded-2xl shadow-lg text-center">
                     <svg class="w-16 h-16 mx-auto mb-4 text-purple-600" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                        <path d="..."/>
-                        <circle cx="12" cy="9" r="1.5"/>
-                        <circle cx="8.5" cy="7.5" r="1"/>
-                        <circle cx="15.5" cy="7.5" r="1"/>
+                        <path d="M21.94,7.39A9.7,9.7,0,0,0,12,2a9.7,9.7,0,0,0-9.94,5.39c-3.35,1-4.11,3.77-1.8,6.29,1.7,1.86,4.24,2.82,6.91,3.18V22h9.66V16.86c2.67-.36,5.21-1.32,6.91-3.18C26.05,11.16,25.29,8.39,21.94,7.39ZM12,4a7.71,7.71,0,0,1,7.88,5.53,8.48,8.48,0,0,1-7.88,4,8.48,8.48,0,0,1-7.88-4A7.71,7.71,0,0,1,12,4Z"/>
+                        <circle cx="12" cy="9" r="1.5"/><circle cx="8.5" cy="7.5" r="1"/><circle cx="15.5" cy="7.5" r="1"/>
                     </svg>
                     <h1 class="text-3xl font-bold text-purple-700 mb-2">Açaí Control Pro</h1>
                     <p class="text-gray-500 mb-6">Acesse sua conta</p>
@@ -97,9 +117,7 @@
                 <div class="h-20 flex items-center justify-center px-4 space-x-2">
                     <svg class="w-8 h-8 text-white" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                         <path d="M21.94,7.39A9.7,9.7,0,0,0,12,2a9.7,9.7,0,0,0-9.94,5.39c-3.35,1-4.11,3.77-1.8,6.29,1.7,1.86,4.24,2.82,6.91,3.18V22h9.66V16.86c2.67-.36,5.21-1.32,6.91-3.18C26.05,11.16,25.29,8.39,21.94,7.39ZM12,4a7.71,7.71,0,0,1,7.88,5.53,8.48,8.48,0,0,1-7.88,4,8.48,8.48,0,0,1-7.88-4A7.71,7.71,0,0,1,12,4Z"/>
-                        <circle cx="12" cy="9" r="1.5"/>
-                        <circle cx="8.5" cy="7.5" r="1"/>
-                        <circle cx="15.5" cy="7.5" r="1"/>
+                        <circle cx="12" cy="9" r="1.5"/><circle cx="8.5" cy="7.5" r="1"/><circle cx="15.5" cy="7.5" r="1"/>
                     </svg>
                     <span class="text-xl font-bold">Açaí Control</span>
                 </div>
@@ -119,9 +137,7 @@
                     <div class="flex items-center space-x-2">
                         <svg class="w-7 h-7 text-purple-600" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                             <path d="M21.94,7.39A9.7,9.7,0,0,0,12,2a9.7,9.7,0,0,0-9.94,5.39c-3.35,1-4.11,3.77-1.8,6.29,1.7,1.86,4.24,2.82,6.91,3.18V22h9.66V16.86c2.67-.36,5.21-1.32,6.91-3.18C26.05,11.16,25.29,8.39,21.94,7.39ZM12,4a7.71,7.71,0,0,1,7.88,5.53,8.48,8.48,0,0,1-7.88,4,8.48,8.48,0,0,1-7.88-4A7.71,7.71,0,0,1,12,4Z"/>
-                            <circle cx="12" cy="9" r="1.5"/>
-                            <circle cx="8.5" cy="7.5" r="1"/>
-                            <circle cx="15.5" cy="7.5" r="1"/>
+                            <circle cx="12" cy="9" r="1.5"/><circle cx="8.5" cy="7.5" r="1"/><circle cx="15.5" cy="7.5" r="1"/>
                         </svg>
                         <h1 class="text-xl font-bold text-purple-700">Açaí Control</h1>
                     </div>
@@ -653,67 +669,103 @@
         menuItems.forEach(item => { item.addEventListener('click', e => { e.preventDefault(); const pageId = item.dataset.page + '-page'; menuItems.forEach(i => i.classList.remove('menu-active')); item.classList.add('menu-active'); pages.forEach(p => p.classList.toggle('hidden', p.id !== pageId)); }); });
         
         document.getElementById('download-pdf-btn').addEventListener('click', () => {
+            document.getElementById('pdf-options-modal').classList.remove('hidden');
+        });
+        document.getElementById('pdf-options-cancel-btn').addEventListener('click', () => {
+            document.getElementById('pdf-options-modal').classList.add('hidden');
+        });
+        document.querySelectorAll('.pdf-download-option').forEach(button => {
+            button.addEventListener('click', (e) => {
+                const period = e.target.dataset.period;
+                generatePDF(period);
+                document.getElementById('pdf-options-modal').classList.add('hidden');
+            });
+        });
+
+        function generatePDF(period) {
             loadingOverlay.classList.remove('hidden');
             const { jsPDF } = window.jspdf;
             const pdf = new jsPDF({ orientation: 'p', unit: 'mm', format: 'a4' });
 
-            const addText = (text, x, y, size, style) => {
-                pdf.setFontSize(size);
-                pdf.setFont('helvetica', style || 'normal');
-                pdf.text(text, x, y, { align: 'center' });
-            };
+            let title, startDate, endDate;
+            const now = new Date();
 
-            let y = 15;
-            addText('Relatório Açaí Control Pro', 105, y, 18, 'bold');
-            y += 5;
-            addText(new Date().toLocaleString('pt-BR'), 105, y, 8);
-            y += 15;
+            switch (period) {
+                case 'semanal':
+                    title = 'Relatório Semanal';
+                    startDate = new Date(now);
+                    startDate.setDate(now.getDate() - now.getDay());
+                    startDate.setHours(0, 0, 0, 0);
+                    endDate = new Date(startDate);
+                    endDate.setDate(startDate.getDate() + 6);
+                    endDate.setHours(23, 59, 59, 999);
+                    break;
+                case 'mensal':
+                    title = 'Relatório Mensal';
+                    startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+                    endDate = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+                    break;
+                case 'anual':
+                    title = 'Relatório Anual';
+                    startDate = new Date(now.getFullYear(), 0, 1);
+                    endDate = new Date(now.getFullYear(), 11, 31);
+                    break;
+            }
 
-            addText('Resumo de Faturamento', 14, y, 14, 'bold');
-            y += 8;
+            const filteredVendas = currentVendas.filter(v => v.timestamp && v.timestamp.toDate() >= startDate && v.timestamp.toDate() <= endDate);
+            const filteredDespesas = currentDespesas.filter(d => d.timestamp && d.timestamp.toDate() >= startDate && d.timestamp.toDate() <= endDate);
+            
+            const totalVendas = filteredVendas.reduce((sum, v) => sum + v.preco, 0);
+            const totalDespesas = filteredDespesas.reduce((sum, d) => sum + d.valor, 0);
+            const faturamento = totalVendas - totalDespesas;
+
+            pdf.setFontSize(18);
+            pdf.setFont('helvetica', 'bold');
+            pdf.text('Relatório de Faturamento', 105, 15, { align: 'center' });
+
+            pdf.setFontSize(10);
+            pdf.setFont('helvetica', 'normal');
+            pdf.text(`${title}: ${startDate.toLocaleDateString('pt-BR')} a ${endDate.toLocaleDateString('pt-BR')}`, 105, 22, { align: 'center' });
             
             pdf.autoTable({
-                startY: y,
+                startY: 30,
+                head: [['Descrição', 'Valor']],
                 body: [
-                    ['Faturamento da Semana', document.getElementById('faturamento-semana').textContent],
-                    ['Faturamento do Mês', document.getElementById('faturamento-mes').textContent],
-                    ['Faturamento do Ano', document.getElementById('faturamento-ano').textContent],
+                    ['Total de Vendas', formatCurrency(totalVendas)],
+                    ['Total de Despesas', formatCurrency(totalDespesas)],
+                    ['Faturamento (Lucro)', formatCurrency(faturamento)],
                 ],
                 theme: 'grid',
-                styles: { fontSize: 10 },
                 headStyles: { fillColor: [76, 29, 149] },
-            });
-            y = pdf.autoTable.previous.finalY + 15;
-
-            const vendasTable = document.getElementById('vendas-detalhadas-table');
-            const despesasTable = document.getElementById('despesas-detalhadas-table');
-
-            addText(`Vendas (${document.getElementById('vendas-periodo-label').textContent})`, 14, y, 14, 'bold');
-            y += 8;
-
-            pdf.autoTable({
-                html: vendasTable,
-                startY: y,
-                theme: 'grid',
-                headStyles: { fillColor: [76, 29, 149] },
-                columnStyles: { 3: { halign: 'center' } }
-            });
-            y = pdf.autoTable.previous.finalY + 15;
-
-            addText(`Despesas (${document.getElementById('despesas-periodo-label').textContent})`, 14, y, 14, 'bold');
-            y += 8;
-
-            pdf.autoTable({
-                html: despesasTable,
-                startY: y,
-                theme: 'grid',
-                headStyles: { fillColor: [220, 38, 38] },
-                columnStyles: { 3: { halign: 'center' } }
+                bodyStyles: { fontStyle: 'bold' }
             });
 
-            pdf.save(`relatorio-acai-control-${new Date().toLocaleDateString('pt-BR').replace(/\//g, '-')}.pdf`);
+            let finalY = pdf.autoTable.previous.finalY;
+
+            if (filteredVendas.length > 0) {
+                pdf.autoTable({
+                    startY: finalY + 10,
+                    head: [['Data/Hora', 'Produto', 'Valor']],
+                    body: filteredVendas.map(v => [v.timestamp.toDate().toLocaleString('pt-BR'), v.nome, formatCurrency(v.preco)]),
+                    theme: 'striped',
+                    headStyles: { fillColor: [76, 29, 149] },
+                });
+                finalY = pdf.autoTable.previous.finalY;
+            }
+
+            if (filteredDespesas.length > 0) {
+                 pdf.autoTable({
+                    startY: finalY + 10,
+                    head: [['Data/Hora', 'Descrição', 'Valor']],
+                    body: filteredDespesas.map(d => [d.timestamp.toDate().toLocaleString('pt-BR'), d.descricao, formatCurrency(d.valor)]),
+                    theme: 'striped',
+                    headStyles: { fillColor: [220, 38, 38] },
+                });
+            }
+
+            pdf.save(`relatorio-${period}-${new Date().toLocaleDateString('pt-BR').replace(/\//g, '-')}.pdf`);
             loadingOverlay.classList.add('hidden');
-        });
+        }
         
         // --- Lógica do Menu Mobile ---
         const sidebar = document.getElementById('sidebar');
@@ -735,29 +787,19 @@
         const tabDespesaContent = document.getElementById('tab-despesa-content');
 
         tabVendaBtn.addEventListener('click', () => {
-            // Ativar botão da Venda
             tabVendaBtn.classList.add('text-purple-600', 'border-purple-600');
             tabVendaBtn.classList.remove('text-gray-500', 'border-transparent');
-            
-            // Desativar botão da Despesa
             tabDespesaBtn.classList.add('text-gray-500', 'border-transparent');
             tabDespesaBtn.classList.remove('text-purple-600', 'border-purple-600');
-
-            // Mostrar conteúdo da Venda
             tabVendaContent.classList.remove('hidden');
             tabDespesaContent.classList.add('hidden');
         });
 
         tabDespesaBtn.addEventListener('click', () => {
-            // Ativar botão da Despesa
             tabDespesaBtn.classList.add('text-purple-600', 'border-purple-600');
             tabDespesaBtn.classList.remove('text-gray-500', 'border-transparent');
-
-            // Desativar botão da Venda
             tabVendaBtn.classList.add('text-gray-500', 'border-transparent');
             tabVendaBtn.classList.remove('text-purple-600', 'border-purple-600');
-
-            // Mostrar conteúdo da Despesa
             tabDespesaContent.classList.remove('hidden');
             tabVendaContent.classList.add('hidden');
         });
@@ -765,6 +807,3 @@
     </script>
 </body>
 </html>
-
-
-
