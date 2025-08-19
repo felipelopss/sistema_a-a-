@@ -602,6 +602,40 @@
 
         mobileMenuButton.addEventListener('click', toggleMenu);
         mobileMenuOverlay.addEventListener('click', toggleMenu);
+        
+        // --- Lógica das Abas de Registro ---
+        const tabVendaBtn = document.getElementById('tab-venda-btn');
+        const tabDespesaBtn = document.getElementById('tab-despesa-btn');
+        const tabVendaContent = document.getElementById('tab-venda-content');
+        const tabDespesaContent = document.getElementById('tab-despesa-content');
+
+        tabVendaBtn.addEventListener('click', () => {
+            // Ativar botão da Venda
+            tabVendaBtn.classList.add('text-purple-600', 'border-purple-600');
+            tabVendaBtn.classList.remove('text-gray-500', 'border-transparent');
+            
+            // Desativar botão da Despesa
+            tabDespesaBtn.classList.add('text-gray-500', 'border-transparent');
+            tabDespesaBtn.classList.remove('text-purple-600', 'border-purple-600');
+
+            // Mostrar conteúdo da Venda
+            tabVendaContent.classList.remove('hidden');
+            tabDespesaContent.classList.add('hidden');
+        });
+
+        tabDespesaBtn.addEventListener('click', () => {
+            // Ativar botão da Despesa
+            tabDespesaBtn.classList.add('text-purple-600', 'border-purple-600');
+            tabDespesaBtn.classList.remove('text-gray-500', 'border-transparent');
+
+            // Desativar botão da Venda
+            tabVendaBtn.classList.add('text-gray-500', 'border-transparent');
+            tabVendaBtn.classList.remove('text-purple-600', 'border-purple-600');
+
+            // Mostrar conteúdo da Despesa
+            tabDespesaContent.classList.remove('hidden');
+            tabVendaContent.classList.add('hidden');
+        });
 
     </script>
 </body>
