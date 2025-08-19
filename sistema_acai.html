@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Açaí Control Pro - v8 Final</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .menu-active { background-color: #4c1d95; color: white; }
+        .form-container { max-width: 400px; }
+        .filter-checkbox:checked + label {
+            background-color: #8b5cf6;
+            color: white;
+            border-color: #8b5cf6;
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+
+    <div id="loading-overlay" class="fixed inset-0 bg-white bg-opacity-80 z-50 flex items-center justify-center hidden">
+        <i class="fas fa-spinner fa-spin text-purple-600 text-5xl"></i>
+    </div>
+
+    <!-- Container de Autenticação -->
+    <div id="auth-container" class="min-h-screen flex items-center justify-center p-4">
+        <div class="w-full form-container">
+            <div id="login-form-container">
+                <div class="bg-white p-8 rounded-2xl shadow-lg text-center">
+                    <h1 class="text-3xl font-bold text-purple-700 mb-2">Açaí Control Pro</h1>
+                    <p class="text-gray-500 mb-6">Acesse sua conta</p>
+                    <form id="login-form" class="space-y-4">
+                        <input type="email" id="login-email" placeholder="Seu e-mail" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500" required>
+                        <input type="password" id="login-password" placeholder="Sua senha" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500" required>
+                        <button type="submit" class="w-full bg-purple-600 text-white py-2 rounded-lg hover:bg-purple-700 transition">Entrar</button>
+                    </form>
+                    <p id="login-error" class="text-red-500 text-sm mt-2 h-4"></p>
+                    <div class="mt-4 text-sm"><a href="#" id="show-register" class="text-purple-600 hover:underline">Não tem uma conta? Cadastre-se</a><span class="mx-2 text-gray-300">|</span><a href="#" id="show-reset" class="text-purple-600 hover:underline">Esqueci a senha</a></div>
+                </div>
+            </div>
+            <div id="register-form-container" class="hidden">
+                 <div class="bg-white p-8 rounded-2xl shadow-lg text-center">
+                    <h1 class="text-3xl font-bold text-purple-700 mb-2">Crie sua Conta</h1><p class="text-gray-500 mb-6">É rápido e fácil.</p>
+                    <form id="register-form" class="space-y-4">
+                        <input type="email" id="register-email" placeholder="Seu e-mail" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500" required>
+                        <input type="password" id="register-password" placeholder="Crie uma senha" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500" required>
+                        <button type="submit" class="w-full bg-purple-600 text-white py-2 rounded-lg hover:bg-purple-700 transition">Cadastrar</button>
+                    </form>
+                    <p id="register-error" class="text-red-500 text-sm mt-2 h-4"></p><a href="#" id="show-login-from-register" class="mt-4 text-sm text-purple-600 hover:underline">Já tenho uma conta</a>
+                </div>
+            </div>
+            <div id="reset-form-container" class="hidden">
+                <div class="bg-white p-8 rounded-2xl shadow-lg text-center">
+                    <h1 class="text-3xl font-bold text-purple-700 mb-2">Redefinir Senha</h1><p class="text-gray-500 mb-6">Enviaremos um link para o seu e-mail.</p>
+                    <form id="reset-form" class="space-y-4">
+                        <input type="email" id="reset-email" placeholder="Seu e-mail de cadastro" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500" required>
+                        <button type="submit" class="w-full bg-purple-600 text-white py-2 rounded-lg hover:bg-purple-700 transition">Enviar Link</button>
+                    </form>
+                    <p id="reset-message" class="text-green-600 text-sm mt-2 h-4"></p><a href="#" id="show-login-from-reset" class="mt-4 text-sm text-purple-600 hover:underline">Voltar para o Login</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Container Principal da Aplicação -->
+    <div id="app-container" class="hidden">
+        <div class="flex h-screen bg-gray-100">
+            <!-- Menu Lateral -->
+            <aside class="w-64 bg-purple-800 text-purple-100 flex flex-col">
+                <div class="h-20 flex items-center justify-center text-2xl font-bold">Açaí Control</div>
+                <nav class="flex-1 px-4 space-y-2">
+                    <a href="#" data-page="dashboard" class="menu-item flex items-center px-4 py-2 rounded-lg hover:bg-purple-700 menu-active"><i class="fas fa-wallet w-6 mr-3"></i>Dashboard</a>
+                    <a href="#" data-page="registros" class="menu-item flex items-center px-4 py-2 rounded-lg hover:bg-purple-700"><i class="fas fa-edit w-6 mr-3"></i>Registros</a>
+                    <a href="#" data-page="relatorios" class="menu-item flex items-center px-4 py-2 rounded-lg hover:bg-purple-700"><i class="fas fa-file-alt w-6 mr-3"></i>Relatórios</a>
+                </nav>
+                <div class="p-4 border-t border-purple-700"><p id="user-email" class="text-sm truncate" title="email"></p><button id="logout-btn" class="w-full mt-2 text-left flex items-center px-4 py-2 rounded-lg hover:bg-purple-700"><i class="fas fa-sign-out-alt w-6 mr-3"></i>Sair</button></div>
+            </aside>
+
+            <!-- Conteúdo Principal -->
+            <main class="flex-1 p-6 lg:p-10 overflow-y-auto">
+                <!-- Página: Dashboard -->
+                <section id="dashboard-page" class="page-content space-y-6">
+                    <h1 class="text-3xl font-bold text-gray-800">Análise de Faturamento</h1>
+
+                    <!-- Filtro de Data -->
+                    <div class="bg-white p-6 rounded-xl shadow-md">
+                        <h2 class="text-xl font-semibold mb-4 text-gray-700">Filtrar por Período</h2>
+                        <div class="flex flex-wrap items-end gap-4">
+                            <div>
+                                <label for="start-date" class="block text-sm font-medium text-gray-700">Data de Início</label>
+                                <input type="date" id="start-date" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500">
+                            </div>
+                            <div>
+                                <label for="end-date" class="block text-sm font-medium text-gray-700">Data Final</label>
+                                <input type="date" id="end-date" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500">
+                            </div>
+                            <button id="dashboard-filter-btn" class="bg-purple-600 text-white py-2 px-4 rounded-md hover:bg-purple-700">Filtrar</button>
+                        </div>
+                    </div>
+
+                    <!-- Resumo do Período -->
+                    <div class="bg-white p-6 rounded-xl shadow-md">
+                         <h2 class="text-xl font-semibold mb-4 text-gray-700">Resumo do Período Selecionado</h2>
+                         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
+                            <div class="bg-green-100 p-4 rounded-lg"><p class="text-sm text-green-700">Total Vendas</p><p id="dashboard-vendas" class="text-2xl font-bold text-green-800">R$ 0,00</p></div>
+                            <div class="bg-red-100 p-4 rounded-lg"><p class="text-sm text-red-700">Total Despesas</p><p id="dashboard-despesas" class="text-2xl font-bold text-red-800">R$ 0,00</p></div>
+                            <div class="bg-purple-100 p-4 rounded-lg"><p class="text-sm text-purple-700">Faturamento (Lucro)</p><p id="dashboard-faturamento" class="text-2xl font-bold text-purple-800">R$ 0,00</p></div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Página: Registros -->
+                <section id="registros-page" class="page-content hidden">
+                    <h1 class="text-3xl font-bold text-gray-800 mb-8">Registrar Vendas e Despesas</h1>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div class="bg-white p-6 rounded-xl shadow-md"><h2 class="text-xl font-semibold mb-4 text-purple-700">Nova Venda</h2><form id="form-venda" class="space-y-4"><input type="text" id="produto-nome" list="produtos-sugestoes" class="w-full px-3 py-2 border rounded-md" placeholder="Produto" required><datalist id="produtos-sugestoes"><option value="Açaí 300ml"><option value="Açaí 500ml"></datalist><input type="number" id="produto-preco" step="0.01" class="w-full px-3 py-2 border rounded-md" placeholder="Preço (R$)" required><button type="submit" class="w-full bg-purple-600 text-white py-2 rounded-md hover:bg-purple-700">Adicionar Venda</button></form></div>
+                        <div class="bg-white p-6 rounded-xl shadow-md"><h2 class="text-xl font-semibold mb-4 text-red-600">Nova Despesa</h2><form id="form-despesa" class="space-y-4"><input type="text" id="despesa-descricao" class="w-full px-3 py-2 border rounded-md" placeholder="Descrição" required><input type="number" id="despesa-valor" step="0.01" class="w-full px-3 py-2 border rounded-md" placeholder="Valor (R$)" required><button type="submit" class="w-full bg-red-500 text-white py-2 rounded-md hover:bg-red-600">Adicionar Despesa</button></form></div>
+                    </div>
+                </section>
+
+                <!-- Página: Relatórios -->
+                <section id="relatorios-page" class="page-content hidden space-y-6">
+                     <div class="flex flex-wrap justify-between items-center gap-4">
+                        <h1 class="text-3xl font-bold text-gray-800">Relatórios</h1>
+                        <button id="download-pdf-btn" class="bg-gray-700 text-white py-2 px-4 rounded-md hover:bg-gray-800"><i class="fas fa-file-pdf mr-2"></i>Baixar PDF</button>
+                    </div>
+
+                    <!-- Conteúdo para PDF -->
+                    <div id="pdf-content" class="space-y-6">
+                        <!-- Resumo de Faturamento -->
+                        <div class="bg-white p-6 rounded-xl shadow-md">
+                            <h2 class="text-xl font-semibold mb-4 text-gray-700">Resumo de Faturamento</h2>
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
+                                <div class="bg-purple-100 p-4 rounded-lg"><p class="text-sm text-purple-700">Faturamento da Semana</p><p id="faturamento-semana" class="text-2xl font-bold text-purple-800">R$ 0,00</p></div>
+                                <div class="bg-purple-100 p-4 rounded-lg"><p class="text-sm text-purple-700">Faturamento do Mês</p><p id="faturamento-mes" class="text-2xl font-bold text-purple-800">R$ 0,00</p></div>
+                                <div class="bg-purple-100 p-4 rounded-lg"><p class="text-sm text-purple-700">Faturamento do Ano</p><p id="faturamento-ano" class="text-2xl font-bold text-purple-800">R$ 0,00</p></div>
+                            </div>
+                        </div>
+
+                        <!-- Filtros e Detalhes -->
+                        <div class="bg-white p-6 rounded-xl shadow-md">
+                            <h2 class="text-xl font-semibold mb-4 text-gray-700">Relatório Detalhado</h2>
+                            <div class="flex flex-wrap items-start gap-x-8 gap-y-4">
+                                <div>
+                                    <p class="font-medium mb-2">Período:</p>
+                                    <div id="period-filter" class="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                                        <div><input type="radio" id="period-semanal" name="period" value="semanal" checked><label for="period-semanal" class="ml-2 cursor-pointer">Semanal</label></div>
+                                        <div><input type="radio" id="period-mensal" name="period" value="mensal"><label for="period-mensal" class="ml-2 cursor-pointer">Mensal</label></div>
+                                        <div><input type="radio" id="period-anual" name="period" value="anual"><label for="period-anual" class="ml-2 cursor-pointer">Anual</label></div>
+                                    </div>
+                                </div>
+                                <div id="dias-semana-container">
+                                    <p class="font-medium mb-2">Dias da semana:</p>
+                                    <div id="dias-semana-filter" class="flex flex-wrap gap-2"></div>
+                                </div>
+                            </div>
+                            <div class="mt-6">
+                                <button id="filter-btn" class="bg-purple-600 text-white py-2 px-4 rounded-md hover:bg-purple-700">Aplicar Filtro</button>
+                            </div>
+                        </div>
+
+                        <div class="bg-white p-6 rounded-xl shadow-md">
+                            <h2 class="text-xl font-semibold mb-4 text-purple-700">Vendas (<span id="vendas-periodo-label"></span>)</h2>
+                            <div class="overflow-x-auto max-h-96"><table class="min-w-full"><thead class="bg-gray-50 sticky top-0"><tr><th class="px-4 py-2 text-left">Data/Hora</th><th class="px-4 py-2 text-left">Produto</th><th class="px-4 py-2 text-right">Valor</th></tr></thead><tbody id="vendas-detalhadas-table"></tbody></table></div>
+                        </div>
+                        <div class="bg-white p-6 rounded-xl shadow-md">
+                            <h2 class="text-xl font-semibold mb-4 text-red-600">Despesas (<span id="despesas-periodo-label"></span>)</h2>
+                            <div class="overflow-x-auto max-h-96"><table class="min-w-full"><thead class="bg-gray-50 sticky top-0"><tr><th class="px-4 py-2 text-left">Data/Hora</th><th class="px-4 py-2 text-left">Descrição</th><th class="px-4 py-2 text-right">Valor</th></tr></thead><tbody id="despesas-detalhadas-table"></tbody></table></div>
+                        </div>
+                    </div>
+                </section>
+            </main>
+        </div>
+    </div>
+
+    <script type="module">
+        // --- Imports e Configuração do Firebase ---
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail, signOut, onAuthStateChanged, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+        const firebaseConfig = typeof __firebase_config !== 'undefined' 
+            ? JSON.parse(__firebase_config)
+            : {
+                apiKey: "SUA_API_KEY",
+                authDomain: "SEU_AUTH_DOMAIN",
+                projectId: "SEU_PROJECT_ID",
+                storageBucket: "SEU_STORAGE_BUCKET",
+                messagingSenderId: "SEU_MESSAGING_SENDER_ID",
+                appId: "SEU_APP_ID"
+            };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const { jsPDF } = window.jspdf;
+
+        // --- Variáveis Globais ---
+        let userId = null;
+        let unsubVendas = () => {};
+        let unsubDespesas = () => {};
+        
+        const loadingOverlay = document.getElementById('loading-overlay');
+        const authContainer = document.getElementById('auth-container');
+        const appContainer = document.getElementById('app-container');
+
+        // --- Lógica de Autenticação ---
+        const loginForm = document.getElementById('login-form');
+        const registerForm = document.getElementById('register-form');
+        const resetForm = document.getElementById('reset-form');
+        loginForm.addEventListener('submit', e => { e.preventDefault(); loadingOverlay.classList.remove('hidden'); signInWithEmailAndPassword(auth, loginForm['login-email'].value, loginForm['login-password'].value).catch(err => document.getElementById('login-error').textContent = "E-mail ou senha inválidos.").finally(() => loadingOverlay.classList.add('hidden')); });
+        registerForm.addEventListener('submit', e => { e.preventDefault(); loadingOverlay.classList.remove('hidden'); createUserWithEmailAndPassword(auth, registerForm['register-email'].value, registerForm['register-password'].value).catch(err => document.getElementById('register-error').textContent = "Erro ao cadastrar.").finally(() => loadingOverlay.classList.add('hidden')); });
+        resetForm.addEventListener('submit', e => { e.preventDefault(); sendPasswordResetEmail(auth, resetForm['reset-email'].value).then(() => document.getElementById('reset-message').textContent = "Link enviado!").catch(err => document.getElementById('reset-message').textContent = "Erro ao enviar."); });
+        document.getElementById('logout-btn').addEventListener('click', () => signOut(auth));
+        const authForms = { login: document.getElementById('login-form-container'), register: document.getElementById('register-form-container'), reset: document.getElementById('reset-form-container') };
+        const showAuthForm = (formName) => Object.keys(authForms).forEach(key => authForms[key].classList.toggle('hidden', key !== formName));
+        document.getElementById('show-register').addEventListener('click', (e) => { e.preventDefault(); showAuthForm('register'); });
+        document.getElementById('show-reset').addEventListener('click', (e) => { e.preventDefault(); showAuthForm('reset'); });
+        document.getElementById('show-login-from-register').addEventListener('click', (e) => { e.preventDefault(); showAuthForm('login'); });
+        document.getElementById('show-login-from-reset').addEventListener('click', (e) => { e.preventDefault(); showAuthForm('login'); });
+
+        // --- Controlador Principal ---
+        onAuthStateChanged(auth, user => {
+            if (user) {
+                userId = user.uid;
+                document.getElementById('user-email').textContent = user.email;
+                authContainer.classList.add('hidden');
+                appContainer.classList.remove('hidden');
+                setupFilters();
+                setupDashboard();
+                listenToData(userId);
+            } else {
+                userId = null;
+                unsubVendas(); unsubDespesas();
+                authContainer.classList.remove('hidden');
+                appContainer.classList.add('hidden');
+            }
+        });
+        
+        if (typeof __initial_auth_token !== 'undefined') {
+            signInWithCustomToken(auth, __initial_auth_token);
+        }
+
+        // --- Lógica de Dados (Firestore) ---
+        function listenToData(uid) {
+            loadingOverlay.classList.remove('hidden');
+            const vendasRef = collection(db, `artifacts/${appId}/users/${uid}/vendas`);
+            const despesasRef = collection(db, `artifacts/${appId}/users/${uid}/despesas`);
+            
+            unsubVendas = onSnapshot(query(vendasRef, orderBy("timestamp", "desc")), snap => {
+                const vendasData = snap.docs.map(doc => doc.data());
+                renderAll(vendasData, null); 
+            });
+
+            unsubDespesas = onSnapshot(query(despesasRef, orderBy("timestamp", "desc")), snap => {
+                const despesasData = snap.docs.map(doc => doc.data());
+                renderAll(null, despesasData);
+            });
+        }
+        
+        document.getElementById('form-venda').addEventListener('submit', async e => { 
+            e.preventDefault(); 
+            const nome = e.target['produto-nome'].value; 
+            const preco = parseFloat(e.target['produto-preco'].value); 
+            if (nome && !isNaN(preco) && userId) { 
+                loadingOverlay.classList.remove('hidden');
+                try {
+                    await addDoc(collection(db, `artifacts/${appId}/users/${userId}/vendas`), { nome, preco, timestamp: serverTimestamp() }); 
+                    e.target.reset(); 
+                } catch (error) {
+                    console.error("Erro ao adicionar venda:", error);
+                } finally {
+                    loadingOverlay.classList.add('hidden');
+                }
+            } 
+        });
+        
+        document.getElementById('form-despesa').addEventListener('submit', async e => { 
+            e.preventDefault(); 
+            const descricao = e.target['despesa-descricao'].value; 
+            const valor = parseFloat(e.target['despesa-valor'].value); 
+            if (descricao && !isNaN(valor) && userId) { 
+                loadingOverlay.classList.remove('hidden');
+                try {
+                    await addDoc(collection(db, `artifacts/${appId}/users/${userId}/despesas`), { descricao, valor, timestamp: serverTimestamp() }); 
+                    e.target.reset(); 
+                } catch (error) {
+                    console.error("Erro ao adicionar despesa:", error);
+                } finally {
+                    loadingOverlay.classList.add('hidden');
+                }
+            } 
+        });
+        
+        // --- Lógica de Renderização ---
+        let currentVendas = [];
+        let currentDespesas = [];
+
+        function renderAll(vendas, despesas) {
+            if (vendas) currentVendas = vendas;
+            if (despesas) currentDespesas = despesas;
+            
+            renderFaturamentoSummary(currentVendas, currentDespesas);
+            renderDashboard(currentVendas, currentDespesas);
+            document.getElementById('filter-btn').click(); 
+            loadingOverlay.classList.add('hidden');
+        }
+
+        const formatCurrency = (value) => value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+
+        function renderFaturamentoSummary(vendas, despesas) {
+            const now = new Date();
+            
+            // Semanal
+            const startOfWeek = new Date(now);
+            startOfWeek.setDate(now.getDate() - now.getDay());
+            startOfWeek.setHours(0, 0, 0, 0);
+            const vendasSemana = vendas.filter(v => v.timestamp && v.timestamp.toDate() >= startOfWeek).reduce((sum, v) => sum + v.preco, 0);
+            const despesasSemana = despesas.filter(d => d.timestamp && d.timestamp.toDate() >= startOfWeek).reduce((sum, d) => sum + d.valor, 0);
+            document.getElementById('faturamento-semana').textContent = formatCurrency(vendasSemana - despesasSemana);
+
+            // Mensal
+            const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+            const vendasMes = vendas.filter(v => v.timestamp && v.timestamp.toDate() >= startOfMonth).reduce((sum, v) => sum + v.preco, 0);
+            const despesasMes = despesas.filter(d => d.timestamp && d.timestamp.toDate() >= startOfMonth).reduce((sum, d) => sum + d.valor, 0);
+            document.getElementById('faturamento-mes').textContent = formatCurrency(vendasMes - despesasMes);
+
+            // Anual
+            const startOfYear = new Date(now.getFullYear(), 0, 1);
+            const vendasAno = vendas.filter(v => v.timestamp && v.timestamp.toDate() >= startOfYear).reduce((sum, v) => sum + v.preco, 0);
+            const despesasAno = despesas.filter(d => d.timestamp && d.timestamp.toDate() >= startOfYear).reduce((sum, d) => sum + d.valor, 0);
+            document.getElementById('faturamento-ano').textContent = formatCurrency(vendasAno - despesasAno);
+        }
+
+        // --- Lógica do Dashboard ---
+        function setupDashboard() {
+            const startDateInput = document.getElementById('start-date');
+            const endDateInput = document.getElementById('end-date');
+            const now = new Date();
+            const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+            const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+
+            const toISODateString = (date) => {
+                const year = date.getFullYear();
+                const month = (date.getMonth() + 1).toString().padStart(2, '0');
+                const day = date.getDate().toString().padStart(2, '0');
+                return `${year}-${month}-${day}`;
+            };
+
+            startDateInput.value = toISODateString(startOfMonth);
+            endDateInput.value = toISODateString(endOfMonth);
+
+            document.getElementById('dashboard-filter-btn').addEventListener('click', () => {
+                renderDashboard(currentVendas, currentDespesas);
+            });
+        }
+
+        function renderDashboard(vendas, despesas) {
+            const startDateInput = document.getElementById('start-date').value;
+            const endDateInput = document.getElementById('end-date').value;
+
+            if (!startDateInput || !endDateInput) return;
+
+            const startDate = new Date(`${startDateInput}T00:00:00`);
+            const endDate = new Date(`${endDateInput}T23:59:59`);
+
+            const filteredVendas = vendas.filter(v => {
+                if (!v.timestamp) return false;
+                const vendaDate = v.timestamp.toDate();
+                return vendaDate >= startDate && vendaDate <= endDate;
+            });
+
+            const filteredDespesas = despesas.filter(d => {
+                if (!d.timestamp) return false;
+                const despesaDate = d.timestamp.toDate();
+                return despesaDate >= startDate && despesaDate <= endDate;
+            });
+
+            const totalVendas = filteredVendas.reduce((sum, v) => sum + v.preco, 0);
+            const totalDespesas = filteredDespesas.reduce((sum, d) => sum + d.valor, 0);
+            const faturamento = totalVendas - totalDespesas;
+
+            document.getElementById('dashboard-vendas').textContent = formatCurrency(totalVendas);
+            document.getElementById('dashboard-despesas').textContent = formatCurrency(totalDespesas);
+            document.getElementById('dashboard-faturamento').textContent = formatCurrency(faturamento);
+        }
+
+        // --- Lógica de Relatórios e Filtros ---
+        function setupFilters() {
+            const container = document.getElementById('dias-semana-filter');
+            container.innerHTML = '';
+            const dias = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+            dias.forEach((dia, index) => {
+                container.innerHTML += `<div><input type="checkbox" id="dia-${index}" value="${index}" class="hidden filter-checkbox"><label for="dia-${index}" class="px-3 py-1 border rounded-full cursor-pointer transition">${dia}</label></div>`;
+            });
+            
+            document.querySelectorAll('input[name="period"]').forEach(radio => {
+                radio.addEventListener('change', (e) => {
+                    document.getElementById('dias-semana-container').style.display = e.target.value === 'semanal' ? 'block' : 'none';
+                });
+            });
+        }
+
+        document.getElementById('filter-btn').addEventListener('click', () => {
+            const period = document.querySelector('input[name="period"]:checked').value;
+            let filteredVendas = [];
+            let filteredDespesas = [];
+            const now = new Date();
+
+            document.getElementById('vendas-periodo-label').textContent = period;
+            document.getElementById('despesas-periodo-label').textContent = period;
+
+            switch (period) {
+                case 'semanal':
+                    const selectedDays = [...document.querySelectorAll('.filter-checkbox:checked')].map(cb => parseInt(cb.value));
+                    filteredVendas = currentVendas.filter(v => v.timestamp && selectedDays.includes(v.timestamp.toDate().getDay()));
+                    filteredDespesas = currentDespesas.filter(d => d.timestamp && selectedDays.includes(d.timestamp.toDate().getDay()));
+                    break;
+                case 'mensal':
+                    const currentMonth = now.getMonth();
+                    const currentYear = now.getFullYear();
+                    filteredVendas = currentVendas.filter(v => v.timestamp && v.timestamp.toDate().getMonth() === currentMonth && v.timestamp.toDate().getFullYear() === currentYear);
+                    filteredDespesas = currentDespesas.filter(d => d.timestamp && d.timestamp.toDate().getMonth() === currentMonth && d.timestamp.toDate().getFullYear() === currentYear);
+                    break;
+                case 'anual':
+                    const year = now.getFullYear();
+                    filteredVendas = currentVendas.filter(v => v.timestamp && v.timestamp.toDate().getFullYear() === year);
+                    filteredDespesas = currentDespesas.filter(d => d.timestamp && d.timestamp.toDate().getFullYear() === year);
+                    break;
+            }
+            renderDetailedTables(filteredVendas, filteredDespesas);
+        });
+        
+        function renderDetailedTables(vendas, despesas) {
+            const vendasTbody = document.getElementById('vendas-detalhadas-table');
+            const despesasTbody = document.getElementById('despesas-detalhadas-table');
+            vendasTbody.innerHTML = '';
+            despesasTbody.innerHTML = '';
+            
+            if (vendas.length === 0) vendasTbody.innerHTML = '<tr><td colspan="3" class="text-center p-4 text-gray-500">Nenhuma venda encontrada.</td></tr>';
+            vendas.forEach(v => {
+                const data = v.timestamp ? v.timestamp.toDate().toLocaleString('pt-BR') : '...';
+                vendasTbody.innerHTML += `<tr><td class="p-2 border-b">${data}</td><td class="p-2 border-b">${v.nome}</td><td class="p-2 border-b text-right text-green-600">${formatCurrency(v.preco)}</td></tr>`;
+            });
+            if (despesas.length === 0) despesasTbody.innerHTML = '<tr><td colspan="3" class="text-center p-4 text-gray-500">Nenhuma despesa encontrada.</td></tr>';
+            despesas.forEach(d => {
+                const data = d.timestamp ? d.timestamp.toDate().toLocaleString('pt-BR') : '...';
+                despesasTbody.innerHTML += `<tr><td class="p-2 border-b">${data}</td><td class="p-2 border-b">${d.descricao}</td><td class="p-2 border-b text-right text-red-600">${formatCurrency(d.valor)}</td></tr>`;
+            });
+        }
+
+        // --- Navegação e Download PDF ---
+        const menuItems = document.querySelectorAll('.menu-item');
+        const pages = document.querySelectorAll('.page-content');
+        menuItems.forEach(item => { item.addEventListener('click', e => { e.preventDefault(); const pageId = item.dataset.page + '-page'; menuItems.forEach(i => i.classList.remove('menu-active')); item.classList.add('menu-active'); pages.forEach(p => p.classList.toggle('hidden', p.id !== pageId)); }); });
+        
+        document.getElementById('download-pdf-btn').addEventListener('click', () => {
+            loadingOverlay.classList.remove('hidden');
+            const content = document.getElementById('pdf-content');
+            html2canvas(content, { scale: 2 }).then(canvas => {
+                const imgData = canvas.toDataURL('image/png');
+                const pdf = new jsPDF({ orientation: 'p', unit: 'mm', format: 'a4' });
+                const pdfWidth = pdf.internal.pageSize.getWidth();
+                const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+                pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+                pdf.save(`relatorio-acai-control-${new Date().toLocaleDateString('pt-BR').replace(/\//g, '-')}.pdf`);
+                loadingOverlay.classList.add('hidden');
+            });
+        });
+    </script>
+</body>
+</html>
