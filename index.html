@@ -58,6 +58,7 @@
                 </div>
                 <h3 class="text-lg leading-6 font-medium text-gray-900 mt-2">Escolha o Relatório para Baixar</h3>
                 <div class="mt-4 px-7 py-3 space-y-3">
+                    <button data-period="diario" class="pdf-download-option w-full bg-purple-600 text-white py-2 px-4 rounded-md hover:bg-purple-700">Relatório Diário</button>
                     <button data-period="semanal" class="pdf-download-option w-full bg-purple-600 text-white py-2 px-4 rounded-md hover:bg-purple-700">Relatório Semanal</button>
                     <button data-period="mensal" class="pdf-download-option w-full bg-purple-600 text-white py-2 px-4 rounded-md hover:bg-purple-700">Relatório Mensal</button>
                     <button data-period="anual" class="pdf-download-option w-full bg-purple-600 text-white py-2 px-4 rounded-md hover:bg-purple-700">Relatório Anual</button>
@@ -691,6 +692,13 @@
             const now = new Date();
 
             switch (period) {
+                case 'diario':
+                    title = 'Relatório Diário';
+                    startDate = new Date(now);
+                    startDate.setHours(0, 0, 0, 0);
+                    endDate = new Date(now);
+                    endDate.setHours(23, 59, 59, 999);
+                    break;
                 case 'semanal':
                     title = 'Relatório Semanal';
                     startDate = new Date(now);
