@@ -169,9 +169,9 @@
                                     <thead class="bg-gray-50 sticky top-0">
                                         <tr>
                                             <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Data/Hora</th>
-                                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Produto</th>
+                                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Itens</th>
                                             <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Pagamento</th>
-                                            <th class="px-4 py-2 text-right text-xs font-medium text-gray-500 uppercase">Valor</th>
+                                            <th class="px-4 py-2 text-right text-xs font-medium text-gray-500 uppercase">Valor Total</th>
                                         </tr>
                                     </thead>
                                     <tbody id="dashboard-vendas-detalhadas"></tbody>
@@ -237,21 +237,37 @@
                         </div>
                         <div class="max-w-2xl mx-auto">
                             <div id="tab-venda-content" class="registro-tab-content">
-                                <div class="bg-white p-6 sm:p-8 rounded-2xl shadow-lg">
+                                <div class="bg-white p-6 sm:p-8 rounded-2xl shadow-lg space-y-6">
+                                    <!-- Formulário para adicionar item -->
+                                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 items-end">
+                                        <div class="sm:col-span-2">
+                                            <label for="produto-select" class="block text-sm font-medium text-gray-700">Produto</label>
+                                            <select id="produto-select" class="mt-1 w-full p-2 border border-gray-300 rounded-lg"></select>
+                                        </div>
+                                        <div>
+                                            <label for="item-quantidade" class="block text-sm font-medium text-gray-700">Qtd.</label>
+                                            <input type="number" id="item-quantidade" value="1" min="1" class="mt-1 w-full p-2 border border-gray-300 rounded-lg">
+                                        </div>
+                                    </div>
+                                    <button id="add-item-btn" type="button" class="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600">Adicionar Item ao Pedido</button>
+                                    
+                                    <!-- Carrinho / Pedido Atual -->
+                                    <div>
+                                        <h3 class="text-lg font-medium text-gray-800 mb-2">Pedido Atual</h3>
+                                        <div id="order-items-list" class="space-y-2"></div>
+                                        <div class="mt-4 pt-4 border-t flex justify-between items-center text-xl font-bold">
+                                            <span>Total do Pedido:</span>
+                                            <span id="order-total">R$ 0,00</span>
+                                        </div>
+                                    </div>
+
+                                    <!-- Finalizar Venda -->
                                     <form id="form-venda" class="space-y-6">
                                         <div>
-                                            <label for="produto-select" class="block text-sm font-medium text-gray-700 mb-1">Selecione o Produto</label>
-                                            <div class="relative"><div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"><i class="fas fa-ice-cream text-gray-400"></i></div><select id="produto-select" class="w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500" required></select></div>
-                                        </div>
-                                        <div>
-                                            <label for="produto-preco" class="block text-sm font-medium text-gray-700 mb-1">Valor da Venda (R$)</label>
-                                            <div class="relative"><div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"><span class="text-gray-500 sm:text-sm">R$</span></div><input type="number" id="produto-preco" step="0.01" class="w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 bg-gray-100" placeholder="0.00" readonly required></div>
-                                        </div>
-                                        <div>
                                             <label for="forma-pagamento" class="block text-sm font-medium text-gray-700 mb-1">Forma de Pagamento</label>
-                                            <div class="relative"><div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"><i class="fas fa-credit-card text-gray-400"></i></div><select id="forma-pagamento" class="w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500" required><option value="" disabled selected>Selecione</option><option>Dinheiro</option><option>Pix</option><option>Cartão</option></select></div>
+                                            <select id="forma-pagamento" class="w-full p-2 border border-gray-300 rounded-lg" required><option value="" disabled selected>Selecione</option><option>Dinheiro</option><option>Pix</option><option>Cartão</option></select>
                                         </div>
-                                        <button type="submit" class="w-full flex justify-center items-center bg-purple-600 text-white py-3 px-4 rounded-lg hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition-transform transform hover:scale-105"><i class="fas fa-check-circle mr-2"></i> Registrar Venda</button>
+                                        <button type="submit" class="w-full flex justify-center items-center bg-purple-600 text-white py-3 px-4 rounded-lg hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition-transform transform hover:scale-105"><i class="fas fa-check-circle mr-2"></i> Finalizar e Registrar Venda</button>
                                     </form>
                                 </div>
                             </div>
@@ -311,7 +327,7 @@
                             </div>
                             <div class="bg-white p-6 rounded-xl shadow-md">
                                 <h2 class="text-xl font-semibold mb-4 text-purple-700">Vendas (<span id="vendas-periodo-label"></span>)</h2>
-                                <div class="overflow-x-auto max-h-96"><table class="min-w-full"><thead class="bg-gray-50 sticky top-0"><tr><th class="px-4 py-2 text-left">Data/Hora</th><th class="px-4 py-2 text-left">Produto</th><th class="px-4 py-2 text-left">Pagamento</th><th class="px-4 py-2 text-right">Valor</th><th class="px-4 py-2 text-center">Ações</th></tr></thead><tbody id="vendas-detalhadas-table"></tbody></table></div>
+                                <div class="overflow-x-auto max-h-96"><table class="min-w-full"><thead class="bg-gray-50 sticky top-0"><tr><th class="px-4 py-2 text-left">Data/Hora</th><th class="px-4 py-2 text-left">Itens</th><th class="px-4 py-2 text-left">Pagamento</th><th class="px-4 py-2 text-right">Valor Total</th><th class="px-4 py-2 text-center">Ações</th></tr></thead><tbody id="vendas-detalhadas-table"></tbody></table></div>
                             </div>
                             <div class="bg-white p-6 rounded-xl shadow-md">
                                 <h2 class="text-xl font-semibold mb-4 text-red-600">Despesas (<span id="despesas-periodo-label"></span>)</h2>
@@ -435,25 +451,93 @@
             }
         });
 
+        // Lógica do Carrinho de Vendas
+        let currentOrderItems = [];
+        const addItemBtn = document.getElementById('add-item-btn');
+        const produtoSelect = document.getElementById('produto-select');
+        const itemQuantidade = document.getElementById('item-quantidade');
+        const orderItemsList = document.getElementById('order-items-list');
+        const orderTotalEl = document.getElementById('order-total');
+
+        function renderCurrentOrder() {
+            orderItemsList.innerHTML = '';
+            let total = 0;
+            if (currentOrderItems.length === 0) {
+                orderItemsList.innerHTML = '<p class="text-gray-500 text-sm">Nenhum item no pedido.</p>';
+            } else {
+                currentOrderItems.forEach((item, index) => {
+                    orderItemsList.innerHTML += `
+                        <div class="flex justify-between items-center text-sm p-2 bg-gray-50 rounded">
+                            <span>${item.quantidade}x ${item.nome}</span>
+                            <span>${formatCurrency(item.preco * item.quantidade)}</span>
+                            <button class="remove-item-btn text-red-500 hover:text-red-700" data-index="${index}"><i class="fas fa-times-circle"></i></button>
+                        </div>
+                    `;
+                    total += item.preco * item.quantidade;
+                });
+            }
+            orderTotalEl.textContent = formatCurrency(total);
+        }
+
+        addItemBtn.addEventListener('click', () => {
+            const selectedOption = produtoSelect.options[produtoSelect.selectedIndex];
+            if (!selectedOption || selectedOption.disabled) {
+                alert('Por favor, selecione um produto.');
+                return;
+            }
+            const nome = selectedOption.value;
+            const preco = parseFloat(selectedOption.dataset.price);
+            const quantidade = parseInt(itemQuantidade.value);
+
+            if (nome && !isNaN(preco) && quantidade > 0) {
+                currentOrderItems.push({ nome, preco, quantidade });
+                renderCurrentOrder();
+                produtoSelect.selectedIndex = 0;
+                itemQuantidade.value = 1;
+            }
+        });
+
+        orderItemsList.addEventListener('click', (e) => {
+            if (e.target.closest('.remove-item-btn')) {
+                const index = e.target.closest('.remove-item-btn').dataset.index;
+                currentOrderItems.splice(index, 1);
+                renderCurrentOrder();
+            }
+        });
+
         document.getElementById('form-venda').addEventListener('submit', async e => { 
             e.preventDefault(); 
-            const select = e.target['produto-select'];
-            const nome = select.value;
-            const preco = parseFloat(e.target['produto-preco'].value); 
             const formaPagamento = e.target['forma-pagamento'].value;
-            if (nome && !isNaN(preco) && formaPagamento && userId) { 
-                loadingOverlay.classList.remove('hidden');
-                try {
-                    await addDoc(collection(db, `artifacts/${appId}/users/${userId}/vendas`), { nome, preco, formaPagamento, timestamp: serverTimestamp() }); 
-                    e.target.reset(); 
-                    document.getElementById('produto-preco').value = '';
-                    showSuccessMessage();
-                } catch (error) {
-                    console.error("Erro ao adicionar venda:", error);
-                } finally {
-                    loadingOverlay.classList.add('hidden');
-                }
-            } 
+            
+            if (currentOrderItems.length === 0) {
+                alert('Adicione pelo menos um item ao pedido.');
+                return;
+            }
+            if (!formaPagamento) {
+                alert('Selecione a forma de pagamento.');
+                return;
+            }
+
+            const total = currentOrderItems.reduce((sum, item) => sum + (item.preco * item.quantidade), 0);
+            
+            loadingOverlay.classList.remove('hidden');
+            try {
+                await addDoc(collection(db, `artifacts/${appId}/users/${userId}/vendas`), { 
+                    total: total,
+                    formaPagamento: formaPagamento,
+                    items: currentOrderItems,
+                    timestamp: serverTimestamp() 
+                }); 
+                
+                currentOrderItems = [];
+                renderCurrentOrder();
+                e.target.reset(); 
+                showSuccessMessage();
+            } catch (error) {
+                console.error("Erro ao adicionar venda:", error);
+            } finally {
+                loadingOverlay.classList.add('hidden');
+            }
         });
         
         document.getElementById('form-despesa').addEventListener('submit', async e => { 
@@ -511,17 +595,17 @@
             const startOfWeek = new Date(now);
             startOfWeek.setDate(now.getDate() - now.getDay());
             startOfWeek.setHours(0, 0, 0, 0);
-            const vendasSemana = vendas.filter(v => v.timestamp && v.timestamp.toDate() >= startOfWeek).reduce((sum, v) => sum + v.preco, 0);
+            const vendasSemana = vendas.filter(v => v.timestamp && v.timestamp.toDate() >= startOfWeek).reduce((sum, v) => sum + v.total, 0);
             const despesasSemana = despesas.filter(d => d.timestamp && d.timestamp.toDate() >= startOfWeek).reduce((sum, d) => sum + d.valor, 0);
             document.getElementById('faturamento-semana').textContent = formatCurrency(vendasSemana - despesasSemana);
 
             const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-            const vendasMes = vendas.filter(v => v.timestamp && v.timestamp.toDate() >= startOfMonth).reduce((sum, v) => sum + v.preco, 0);
+            const vendasMes = vendas.filter(v => v.timestamp && v.timestamp.toDate() >= startOfMonth).reduce((sum, v) => sum + v.total, 0);
             const despesasMes = despesas.filter(d => d.timestamp && d.timestamp.toDate() >= startOfMonth).reduce((sum, d) => sum + d.valor, 0);
             document.getElementById('faturamento-mes').textContent = formatCurrency(vendasMes - despesasMes);
 
             const startOfYear = new Date(now.getFullYear(), 0, 1);
-            const vendasAno = vendas.filter(v => v.timestamp && v.timestamp.toDate() >= startOfYear).reduce((sum, v) => sum + v.preco, 0);
+            const vendasAno = vendas.filter(v => v.timestamp && v.timestamp.toDate() >= startOfYear).reduce((sum, v) => sum + v.total, 0);
             const despesasAno = despesas.filter(d => d.timestamp && d.timestamp.toDate() >= startOfYear).reduce((sum, d) => sum + d.valor, 0);
             document.getElementById('faturamento-ano').textContent = formatCurrency(vendasAno - despesasAno);
         }
@@ -573,7 +657,7 @@
             const filteredVendas = vendas.filter(v => v.timestamp && v.timestamp.toDate() >= startDate && v.timestamp.toDate() <= endDate);
             const filteredDespesas = despesas.filter(d => d.timestamp && d.timestamp.toDate() >= startDate && d.timestamp.toDate() <= endDate);
             
-            const totalVendas = filteredVendas.reduce((sum, v) => sum + v.preco, 0);
+            const totalVendas = filteredVendas.reduce((sum, v) => sum + v.total, 0);
             const totalDespesas = filteredDespesas.reduce((sum, d) => sum + d.valor, 0);
             const faturamento = totalVendas - totalDespesas;
 
@@ -593,7 +677,8 @@
             }
             vendas.forEach(v => {
                 const data = v.timestamp ? v.timestamp.toDate().toLocaleString('pt-BR') : '...';
-                tableBody.innerHTML += `<tr><td class="p-2 border-b">${data}</td><td class="p-2 border-b">${v.nome}</td><td class="p-2 border-b">${v.formaPagamento || '-'}</td><td class="p-2 border-b text-right text-green-600">${formatCurrency(v.preco)}</td></tr>`;
+                const itemsText = v.items.map(item => `${item.quantidade}x ${item.nome}`).join(', ');
+                tableBody.innerHTML += `<tr><td class="p-2 border-b">${data}</td><td class="p-2 border-b">${itemsText}</td><td class="p-2 border-b">${v.formaPagamento || '-'}</td><td class="p-2 border-b text-right text-green-600">${formatCurrency(v.total)}</td></tr>`;
             });
         }
 
@@ -613,12 +698,6 @@
                 produtoSelect.innerHTML += `<option value="${p.nome}" data-price="${p.preco}">${p.nome}</option>`;
             });
         }
-
-        document.getElementById('produto-select').addEventListener('change', (e) => {
-            const selectedOption = e.target.options[e.target.selectedIndex];
-            const price = selectedOption.dataset.price;
-            document.getElementById('produto-preco').value = price ? parseFloat(price).toFixed(2) : '';
-        });
 
         // --- Lógica de Relatórios e Filtros ---
         function setupFilters() {
@@ -642,11 +721,20 @@
             const now = new Date();
             document.getElementById('vendas-periodo-label').textContent = period;
             document.getElementById('despesas-periodo-label').textContent = period;
+            
+            let startDate, endDate;
             switch (period) {
                 case 'semanal':
+                    startDate = new Date(now);
+                    startDate.setDate(now.getDate() - now.getDay());
+                    startDate.setHours(0, 0, 0, 0);
+                    endDate = new Date(startDate);
+                    endDate.setDate(startDate.getDate() + 6);
+                    endDate.setHours(23, 59, 59, 999);
+                    
                     const selectedDays = [...document.querySelectorAll('.filter-checkbox:checked')].map(cb => parseInt(cb.value));
-                    filteredVendas = currentVendas.filter(v => v.timestamp && selectedDays.includes(v.timestamp.toDate().getDay()));
-                    filteredDespesas = currentDespesas.filter(d => d.timestamp && selectedDays.includes(d.timestamp.toDate().getDay()));
+                    filteredVendas = currentVendas.filter(v => v.timestamp && v.timestamp.toDate() >= startDate && v.timestamp.toDate() <= endDate && selectedDays.includes(v.timestamp.toDate().getDay()));
+                    filteredDespesas = currentDespesas.filter(d => d.timestamp && d.timestamp.toDate() >= startDate && d.timestamp.toDate() <= endDate && selectedDays.includes(d.timestamp.toDate().getDay()));
                     break;
                 case 'mensal':
                     const currentMonth = now.getMonth();
@@ -672,7 +760,8 @@
             if (vendas.length === 0) vendasTbody.innerHTML = '<tr><td colspan="5" class="text-center p-4 text-gray-500">Nenhuma venda encontrada.</td></tr>';
             vendas.forEach(v => {
                 const data = v.timestamp ? v.timestamp.toDate().toLocaleString('pt-BR') : '...';
-                vendasTbody.innerHTML += `<tr><td class="p-2 border-b">${data}</td><td class="p-2 border-b">${v.nome}</td><td class="p-2 border-b">${v.formaPagamento || '-'}</td><td class="p-2 border-b text-right text-green-600">${formatCurrency(v.preco)}</td><td class="p-2 border-b text-center"><button class="delete-btn text-red-500 hover:text-red-700" data-id="${v.id}" data-type="vendas"><i class="fas fa-trash"></i></button></td></tr>`;
+                const itemsText = v.items.map(item => `${item.quantidade}x ${item.nome}`).join(', ');
+                vendasTbody.innerHTML += `<tr><td class="p-2 border-b">${data}</td><td class="p-2 border-b">${itemsText}</td><td class="p-2 border-b">${v.formaPagamento || '-'}</td><td class="p-2 border-b text-right text-green-600">${formatCurrency(v.total)}</td><td class="p-2 border-b text-center"><button class="delete-btn text-red-500 hover:text-red-700" data-id="${v.id}" data-type="vendas"><i class="fas fa-trash"></i></button></td></tr>`;
             });
             if (despesas.length === 0) despesasTbody.innerHTML = '<tr><td colspan="4" class="text-center p-4 text-gray-500">Nenhuma despesa encontrada.</td></tr>';
             despesas.forEach(d => {
@@ -766,7 +855,7 @@
             const filteredVendas = currentVendas.filter(v => v.timestamp && v.timestamp.toDate() >= startDate && v.timestamp.toDate() <= endDate);
             const filteredDespesas = currentDespesas.filter(d => d.timestamp && d.timestamp.toDate() >= startDate && d.timestamp.toDate() <= endDate);
             
-            const totalVendas = filteredVendas.reduce((sum, v) => sum + v.preco, 0);
+            const totalVendas = filteredVendas.reduce((sum, v) => sum + v.total, 0);
             const totalDespesas = filteredDespesas.reduce((sum, d) => sum + d.valor, 0);
             const faturamento = totalVendas - totalDespesas;
 
@@ -796,8 +885,8 @@
             if (filteredVendas.length > 0) {
                 pdf.autoTable({
                     startY: finalY + 10,
-                    head: [['Data/Hora', 'Produto', 'Pagamento', 'Valor']],
-                    body: filteredVendas.map(v => [v.timestamp.toDate().toLocaleString('pt-BR'), v.nome, v.formaPagamento || '-', formatCurrency(v.preco)]),
+                    head: [['Data/Hora', 'Itens', 'Pagamento', 'Valor Total']],
+                    body: filteredVendas.map(v => [v.timestamp.toDate().toLocaleString('pt-BR'), v.items.map(item => `${item.quantidade}x ${item.nome}`).join(', '), v.formaPagamento || '-', formatCurrency(v.total)]),
                     theme: 'striped',
                     headStyles: { fillColor: [76, 29, 149] },
                 });
