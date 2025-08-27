@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Açaí Control Pro - Relatórios Avançados</title>
+    <title>Açaí do Felps - Sistema de Gestão</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -17,6 +17,10 @@
             background-color: #8b5cf6;
             color: white;
             border-color: #8b5cf6;
+        }
+        .dashboard-period-btn.active {
+            background-color: #8b5cf6;
+            color: white;
         }
     </style>
 </head>
@@ -77,8 +81,8 @@
         <div class="w-full form-container">
             <div id="login-form-container">
                 <div class="bg-white p-8 rounded-2xl shadow-lg text-center">
-                    <img src="https://i.imgur.com/WiDeQGb.png" alt="Logotipo" class="w-16 h-16 mx-auto mb-4">
-                    <h1 class="text-3xl font-bold text-purple-700 mb-2">Açaí Control Pro</h1>
+                    <img src="https://i.imgur.com/Y2m8p3F.png" alt="Logotipo" class="w-24 h-24 mx-auto mb-4">
+                    <h1 class="text-3xl font-bold text-purple-700 mb-2">Açaí do Felps</h1>
                     <p class="text-gray-500 mb-6">Acesse sua conta</p>
                     <form id="login-form" class="space-y-4">
                         <input type="email" id="login-email" placeholder="Seu e-mail" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500" required>
@@ -113,11 +117,8 @@
             <!-- Menu Lateral -->
             <aside id="sidebar" class="w-64 bg-purple-800 text-purple-100 flex-shrink-0 flex-col fixed inset-y-0 left-0 transform -translate-x-full md:relative md:translate-x-0 transition-transform duration-200 ease-in-out z-40">
                 <div class="h-20 flex items-center justify-center px-4 space-x-2">
-                    <svg class="w-10 h-10 text-white" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M21.94,7.39A9.7,9.7,0,0,0,12,2a9.7,9.7,0,0,0-9.94,5.39c-3.35,1-4.11,3.77-1.8,6.29,1.7,1.86,4.24,2.82,6.91,3.18V22h9.66V16.86c2.67-.36,5.21-1.32,6.91-3.18C26.05,11.16,25.29,8.39,21.94,7.39ZM12,4a7.71,7.71,0,0,1,7.88,5.53,8.48,8.48,0,0,1-7.88,4,8.48,8.48,0,0,1-7.88-4A7.71,7.71,0,0,1,12,4Z"/>
-                        <circle cx="12" cy="9" r="1.5"/><circle cx="8.5" cy="7.5" r="1"/><circle cx="15.5" cy="7.5" r="1"/>
-                    </svg>
-                    <span class="text-xl font-bold">Açaí Control</span>
+                    <img src="https://i.imgur.com/Y2m8p3F.png" alt="Logotipo" class="w-10 h-10">
+                    <span class="text-xl font-bold">Açaí do Felps</span>
                 </div>
                 <nav class="flex-1 px-4 space-y-2">
                     <a href="#" data-page="dashboard" class="menu-item flex items-center px-4 py-2 rounded-lg hover:bg-purple-700 menu-active"><i class="fas fa-wallet w-6 mr-3"></i>Dashboard</a>
@@ -133,11 +134,8 @@
                 <!-- Header Mobile -->
                 <header class="md:hidden bg-white shadow-md p-4 flex justify-between items-center">
                     <div class="flex items-center space-x-2">
-                        <svg class="w-9 h-9 text-purple-600" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M21.94,7.39A9.7,9.7,0,0,0,12,2a9.7,9.7,0,0,0-9.94,5.39c-3.35,1-4.11,3.77-1.8,6.29,1.7,1.86,4.24,2.82,6.91,3.18V22h9.66V16.86c2.67-.36,5.21-1.32,6.91-3.18C26.05,11.16,25.29,8.39,21.94,7.39ZM12,4a7.71,7.71,0,0,1,7.88,5.53,8.48,8.48,0,0,1-7.88,4,8.48,8.48,0,0,1-7.88-4A7.71,7.71,0,0,1,12,4Z"/>
-                            <circle cx="12" cy="9" r="1.5"/><circle cx="8.5" cy="7.5" r="1"/><circle cx="15.5" cy="7.5" r="1"/>
-                        </svg>
-                        <h1 class="text-xl font-bold text-purple-700">Açaí Control</h1>
+                        <img src="https://i.imgur.com/Y2m8p3F.png" alt="Logotipo" class="w-9 h-9">
+                        <h1 class="text-xl font-bold text-purple-700">Açaí do Felps</h1>
                     </div>
                     <button id="mobile-menu-button" class="text-gray-700">
                         <i class="fas fa-bars text-2xl"></i>
@@ -146,27 +144,38 @@
                 <main class="flex-1 p-4 sm:p-6 lg:p-10 overflow-y-auto">
                     <!-- Página: Dashboard -->
                     <section id="dashboard-page" class="page-content space-y-6">
-                        <h1 class="text-2xl md:text-3xl font-bold text-gray-800">Análise de Faturamento</h1>
+                        <h1 class="text-2xl md:text-3xl font-bold text-gray-800">Dashboard Visual</h1>
                         <div class="bg-white p-6 rounded-xl shadow-md">
                             <h2 class="text-xl font-semibold mb-4 text-gray-700">Filtrar por Período</h2>
-                            <div class="flex flex-col sm:flex-row sm:items-end gap-4">
-                                <div class="flex-1">
-                                    <label for="start-date" class="block text-sm font-medium text-gray-700">Data de Início</label>
-                                    <input type="date" id="start-date" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500">
-                                </div>
-                                <div class="flex-1">
-                                    <label for="end-date" class="block text-sm font-medium text-gray-700">Data Final</label>
-                                    <input type="date" id="end-date" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500">
-                                </div>
-                                <button id="dashboard-filter-btn" class="w-full sm:w-auto bg-purple-600 text-white py-2 px-4 rounded-md hover:bg-purple-700">Filtrar</button>
+                            <div id="dashboard-period-filter" class="flex flex-wrap items-center gap-2">
+                                <button data-period="hoje" class="dashboard-period-btn px-4 py-2 text-sm font-medium rounded-md bg-gray-200 hover:bg-gray-300">Hoje</button>
+                                <button data-period="semana" class="dashboard-period-btn px-4 py-2 text-sm font-medium rounded-md bg-gray-200 hover:bg-gray-300 active">Esta Semana</button>
+                                <button data-period="mes" class="dashboard-period-btn px-4 py-2 text-sm font-medium rounded-md bg-gray-200 hover:bg-gray-300">Este Mês</button>
+                                <button data-period="ano" class="dashboard-period-btn px-4 py-2 text-sm font-medium rounded-md bg-gray-200 hover:bg-gray-300">Este Ano</button>
                             </div>
                         </div>
                         <div class="bg-white p-6 rounded-xl shadow-md">
-                             <h2 class="text-xl font-semibold mb-4 text-gray-700">Resumo do Período Selecionado</h2>
+                             <h2 class="text-xl font-semibold mb-4 text-gray-700">Resumo do Período: <span id="dashboard-period-label" class="text-purple-600">Esta Semana</span></h2>
                              <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
                                 <div class="bg-green-100 p-4 rounded-lg"><p class="text-sm text-green-700">Total Vendas</p><p id="dashboard-vendas" class="text-2xl font-bold text-green-800">R$ 0,00</p></div>
                                 <div class="bg-red-100 p-4 rounded-lg"><p class="text-sm text-red-700">Total Despesas</p><p id="dashboard-despesas" class="text-2xl font-bold text-red-800">R$ 0,00</p></div>
                                 <div class="bg-purple-100 p-4 rounded-lg"><p class="text-sm text-purple-700">Faturamento (Lucro)</p><p id="dashboard-faturamento" class="text-2xl font-bold text-purple-800">R$ 0,00</p></div>
+                            </div>
+                        </div>
+                        <div class="bg-white p-6 rounded-xl shadow-md">
+                            <h2 class="text-xl font-semibold mb-4 text-gray-700">Detalhes de Vendas do Período</h2>
+                            <div class="overflow-x-auto max-h-96">
+                                <table class="min-w-full">
+                                    <thead class="bg-gray-50 sticky top-0">
+                                        <tr>
+                                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Data/Hora</th>
+                                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Produto</th>
+                                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Pagamento</th>
+                                            <th class="px-4 py-2 text-right text-xs font-medium text-gray-500 uppercase">Valor</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="dashboard-vendas-detalhadas"></tbody>
+                                </table>
                             </div>
                         </div>
                     </section>
@@ -238,6 +247,10 @@
                                             <label for="produto-preco" class="block text-sm font-medium text-gray-700 mb-1">Valor da Venda (R$)</label>
                                             <div class="relative"><div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"><span class="text-gray-500 sm:text-sm">R$</span></div><input type="number" id="produto-preco" step="0.01" class="w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 bg-gray-100" placeholder="0.00" readonly required></div>
                                         </div>
+                                        <div>
+                                            <label for="forma-pagamento" class="block text-sm font-medium text-gray-700 mb-1">Forma de Pagamento</label>
+                                            <div class="relative"><div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"><i class="fas fa-credit-card text-gray-400"></i></div><select id="forma-pagamento" class="w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500" required><option value="" disabled selected>Selecione</option><option>Dinheiro</option><option>Pix</option><option>Cartão</option></select></div>
+                                        </div>
                                         <button type="submit" class="w-full flex justify-center items-center bg-purple-600 text-white py-3 px-4 rounded-lg hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition-transform transform hover:scale-105"><i class="fas fa-check-circle mr-2"></i> Registrar Venda</button>
                                     </form>
                                 </div>
@@ -298,7 +311,7 @@
                             </div>
                             <div class="bg-white p-6 rounded-xl shadow-md">
                                 <h2 class="text-xl font-semibold mb-4 text-purple-700">Vendas (<span id="vendas-periodo-label"></span>)</h2>
-                                <div class="overflow-x-auto max-h-96"><table class="min-w-full"><thead class="bg-gray-50 sticky top-0"><tr><th class="px-4 py-2 text-left">Data/Hora</th><th class="px-4 py-2 text-left">Produto</th><th class="px-4 py-2 text-right">Valor</th><th class="px-4 py-2 text-center">Ações</th></tr></thead><tbody id="vendas-detalhadas-table"></tbody></table></div>
+                                <div class="overflow-x-auto max-h-96"><table class="min-w-full"><thead class="bg-gray-50 sticky top-0"><tr><th class="px-4 py-2 text-left">Data/Hora</th><th class="px-4 py-2 text-left">Produto</th><th class="px-4 py-2 text-left">Pagamento</th><th class="px-4 py-2 text-right">Valor</th><th class="px-4 py-2 text-center">Ações</th></tr></thead><tbody id="vendas-detalhadas-table"></tbody></table></div>
                             </div>
                             <div class="bg-white p-6 rounded-xl shadow-md">
                                 <h2 class="text-xl font-semibold mb-4 text-red-600">Despesas (<span id="despesas-periodo-label"></span>)</h2>
@@ -427,10 +440,11 @@
             const select = e.target['produto-select'];
             const nome = select.value;
             const preco = parseFloat(e.target['produto-preco'].value); 
-            if (nome && !isNaN(preco) && userId) { 
+            const formaPagamento = e.target['forma-pagamento'].value;
+            if (nome && !isNaN(preco) && formaPagamento && userId) { 
                 loadingOverlay.classList.remove('hidden');
                 try {
-                    await addDoc(collection(db, `artifacts/${appId}/users/${userId}/vendas`), { nome, preco, timestamp: serverTimestamp() }); 
+                    await addDoc(collection(db, `artifacts/${appId}/users/${userId}/vendas`), { nome, preco, formaPagamento, timestamp: serverTimestamp() }); 
                     e.target.reset(); 
                     document.getElementById('produto-preco').value = '';
                     showSuccessMessage();
@@ -514,41 +528,73 @@
 
         // --- Lógica do Dashboard ---
         function setupDashboard() {
-            const startDateInput = document.getElementById('start-date');
-            const endDateInput = document.getElementById('end-date');
-            const now = new Date();
-            const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-            const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
-
-            const toISODateString = (date) => {
-                const year = date.getFullYear();
-                const month = (date.getMonth() + 1).toString().padStart(2, '0');
-                const day = date.getDate().toString().padStart(2, '0');
-                return `${year}-${month}-${day}`;
-            };
-
-            startDateInput.value = toISODateString(startOfMonth);
-            endDateInput.value = toISODateString(endOfMonth);
-
-            document.getElementById('dashboard-filter-btn').addEventListener('click', () => {
-                renderDashboard(currentVendas, currentDespesas);
+            const periodButtons = document.querySelectorAll('.dashboard-period-btn');
+            periodButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    periodButtons.forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
+                    renderDashboard(currentVendas, currentDespesas);
+                });
             });
         }
 
         function renderDashboard(vendas, despesas) {
-            const startDateInput = document.getElementById('start-date').value;
-            const endDateInput = document.getElementById('end-date').value;
-            if (!startDateInput || !endDateInput) return;
-            const startDate = new Date(`${startDateInput}T00:00:00`);
-            const endDate = new Date(`${endDateInput}T23:59:59`);
+            const activePeriod = document.querySelector('.dashboard-period-btn.active').dataset.period;
+            document.getElementById('dashboard-period-label').textContent = document.querySelector('.dashboard-period-btn.active').textContent;
+            
+            let startDate, endDate;
+            const now = new Date();
+
+            switch (activePeriod) {
+                case 'hoje':
+                    startDate = new Date(now);
+                    startDate.setHours(0, 0, 0, 0);
+                    endDate = new Date(now);
+                    endDate.setHours(23, 59, 59, 999);
+                    break;
+                case 'semana':
+                    startDate = new Date(now);
+                    startDate.setDate(now.getDate() - now.getDay());
+                    startDate.setHours(0, 0, 0, 0);
+                    endDate = new Date(startDate);
+                    endDate.setDate(startDate.getDate() + 6);
+                    endDate.setHours(23, 59, 59, 999);
+                    break;
+                case 'mes':
+                    startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+                    endDate = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+                    break;
+                case 'ano':
+                    startDate = new Date(now.getFullYear(), 0, 1);
+                    endDate = new Date(now.getFullYear(), 11, 31);
+                    break;
+            }
+
             const filteredVendas = vendas.filter(v => v.timestamp && v.timestamp.toDate() >= startDate && v.timestamp.toDate() <= endDate);
             const filteredDespesas = despesas.filter(d => d.timestamp && d.timestamp.toDate() >= startDate && d.timestamp.toDate() <= endDate);
+            
             const totalVendas = filteredVendas.reduce((sum, v) => sum + v.preco, 0);
             const totalDespesas = filteredDespesas.reduce((sum, d) => sum + d.valor, 0);
             const faturamento = totalVendas - totalDespesas;
+
             document.getElementById('dashboard-vendas').textContent = formatCurrency(totalVendas);
             document.getElementById('dashboard-despesas').textContent = formatCurrency(totalDespesas);
             document.getElementById('dashboard-faturamento').textContent = formatCurrency(faturamento);
+            
+            renderDashboardDetails(filteredVendas);
+        }
+
+        function renderDashboardDetails(vendas) {
+            const tableBody = document.getElementById('dashboard-vendas-detalhadas');
+            tableBody.innerHTML = '';
+            if (vendas.length === 0) {
+                tableBody.innerHTML = '<tr><td colspan="4" class="text-center p-4 text-gray-500">Nenhuma venda neste período.</td></tr>';
+                return;
+            }
+            vendas.forEach(v => {
+                const data = v.timestamp ? v.timestamp.toDate().toLocaleString('pt-BR') : '...';
+                tableBody.innerHTML += `<tr><td class="p-2 border-b">${data}</td><td class="p-2 border-b">${v.nome}</td><td class="p-2 border-b">${v.formaPagamento || '-'}</td><td class="p-2 border-b text-right text-green-600">${formatCurrency(v.preco)}</td></tr>`;
+            });
         }
 
         // --- Lógica de Produtos ---
@@ -623,10 +669,10 @@
             vendasTbody.innerHTML = '';
             despesasTbody.innerHTML = '';
             
-            if (vendas.length === 0) vendasTbody.innerHTML = '<tr><td colspan="4" class="text-center p-4 text-gray-500">Nenhuma venda encontrada.</td></tr>';
+            if (vendas.length === 0) vendasTbody.innerHTML = '<tr><td colspan="5" class="text-center p-4 text-gray-500">Nenhuma venda encontrada.</td></tr>';
             vendas.forEach(v => {
                 const data = v.timestamp ? v.timestamp.toDate().toLocaleString('pt-BR') : '...';
-                vendasTbody.innerHTML += `<tr><td class="p-2 border-b">${data}</td><td class="p-2 border-b">${v.nome}</td><td class="p-2 border-b text-right text-green-600">${formatCurrency(v.preco)}</td><td class="p-2 border-b text-center"><button class="delete-btn text-red-500 hover:text-red-700" data-id="${v.id}" data-type="vendas"><i class="fas fa-trash"></i></button></td></tr>`;
+                vendasTbody.innerHTML += `<tr><td class="p-2 border-b">${data}</td><td class="p-2 border-b">${v.nome}</td><td class="p-2 border-b">${v.formaPagamento || '-'}</td><td class="p-2 border-b text-right text-green-600">${formatCurrency(v.preco)}</td><td class="p-2 border-b text-center"><button class="delete-btn text-red-500 hover:text-red-700" data-id="${v.id}" data-type="vendas"><i class="fas fa-trash"></i></button></td></tr>`;
             });
             if (despesas.length === 0) despesasTbody.innerHTML = '<tr><td colspan="4" class="text-center p-4 text-gray-500">Nenhuma despesa encontrada.</td></tr>';
             despesas.forEach(d => {
@@ -726,7 +772,7 @@
 
             pdf.setFontSize(18);
             pdf.setFont('helvetica', 'bold');
-            pdf.text('Relatório de Faturamento', 105, 15, { align: 'center' });
+            pdf.text('Relatório de Faturamento - Açaí do Felps', 105, 15, { align: 'center' });
 
             pdf.setFontSize(10);
             pdf.setFont('helvetica', 'normal');
@@ -750,8 +796,8 @@
             if (filteredVendas.length > 0) {
                 pdf.autoTable({
                     startY: finalY + 10,
-                    head: [['Data/Hora', 'Produto', 'Valor']],
-                    body: filteredVendas.map(v => [v.timestamp.toDate().toLocaleString('pt-BR'), v.nome, formatCurrency(v.preco)]),
+                    head: [['Data/Hora', 'Produto', 'Pagamento', 'Valor']],
+                    body: filteredVendas.map(v => [v.timestamp.toDate().toLocaleString('pt-BR'), v.nome, v.formaPagamento || '-', formatCurrency(v.preco)]),
                     theme: 'striped',
                     headStyles: { fillColor: [76, 29, 149] },
                 });
