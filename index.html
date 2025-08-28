@@ -431,6 +431,10 @@
         });
         
         // --- Lógica de Dados (Firestore) ---
+        let currentVendas = [];
+        let currentDespesas = [];
+        let currentProdutos = [];
+
         function listenToData(uid) {
             loadingOverlay.classList.remove('hidden');
             const vendasRef = collection(db, `artifacts/${appId}/users/${uid}/vendas`);
@@ -438,18 +442,18 @@
             const produtosRef = collection(db, `artifacts/${appId}/users/${uid}/produtos`);
             
             unsubVendas = onSnapshot(query(vendasRef, orderBy("timestamp", "desc")), snap => {
-                const vendasData = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                renderAll(vendasData, null, null); 
+                currentVendas = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                renderFinancials(currentVendas, currentDespesas);
             });
 
             unsubDespesas = onSnapshot(query(despesasRef, orderBy("timestamp", "desc")), snap => {
-                const despesasData = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                renderAll(null, despesasData, null);
+                currentDespesas = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                renderFinancials(currentVendas, currentDespesas);
             });
 
             unsubProdutos = onSnapshot(query(produtosRef, orderBy("nome", "asc")), snap => {
-                const produtosData = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                renderAll(null, null, produtosData);
+                currentProdutos = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                renderProdutosPage(currentProdutos);
             });
         }
         
@@ -617,19 +621,10 @@
         }
         
         // --- Lógica de Renderização ---
-        let currentVendas = [];
-        let currentDespesas = [];
-        let currentProdutos = [];
-
-        function renderAll(vendas, despesas, produtos) {
-            if (vendas) currentVendas = vendas;
-            if (despesas) currentDespesas = despesas;
-            if (produtos) currentProdutos = produtos;
-            
-            renderFaturamentoSummary(currentVendas, currentDespesas);
-            renderDashboard(currentVendas, currentDespesas);
-            renderProdutosPage(currentProdutos);
-            document.getElementById('filter-btn').click(); 
+        function renderFinancials(vendas, despesas) {
+            renderFaturamentoSummary(vendas, despesas);
+            renderDashboard(vendas, despesas);
+            document.getElementById('filter-btn').click();
             loadingOverlay.classList.add('hidden');
         }
 
