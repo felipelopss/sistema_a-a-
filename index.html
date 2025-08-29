@@ -80,6 +80,42 @@
         </div>
     </div>
 
+    <!-- Modal de Resumo do Pedido -->
+    <div id="order-summary-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
+        <div class="relative top-10 mx-auto p-5 border w-full max-w-md shadow-lg rounded-md bg-white">
+            <div class="mt-3">
+                <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-purple-100">
+                    <i class="fas fa-receipt text-2xl text-purple-600"></i>
+                </div>
+                <h3 class="text-lg leading-6 font-medium text-gray-900 text-center mt-2">Resumo do Pedido</h3>
+                <div id="order-summary-list" class="mt-4 max-h-40 overflow-y-auto space-y-2 p-2 bg-gray-50 rounded-lg">
+                    <!-- Itens do pedido serão inseridos aqui -->
+                </div>
+                <div class="mt-4 pt-4 border-t flex justify-between items-center text-xl font-bold">
+                    <span>Total:</span>
+                    <span id="order-summary-total">R$ 0,00</span>
+                </div>
+                <div class="mt-4">
+                    <label for="summary-forma-pagamento" class="block text-sm font-medium text-gray-700 mb-1">Forma de Pagamento</label>
+                    <select id="summary-forma-pagamento" class="w-full p-2 border border-gray-300 rounded-lg" required>
+                        <option value="" disabled selected>Selecione</option>
+                        <option>Dinheiro</option>
+                        <option>Pix</option>
+                        <option>Cartão</option>
+                    </select>
+                </div>
+                <div class="items-center px-4 py-3 mt-4 sm:flex sm:flex-row-reverse">
+                    <button id="finalize-order-btn" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-purple-600 text-base font-medium text-white hover:bg-purple-700 focus:outline-none sm:ml-3 sm:w-auto sm:text-sm">
+                        Finalizar Pedido
+                    </button>
+                    <button id="order-summary-cancel-btn" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none sm:mt-0 sm:w-auto sm:text-sm">
+                        Cancelar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Container de Autenticação -->
     <div id="auth-container" class="min-h-screen flex items-center justify-center p-4">
         <div class="w-full form-container">
@@ -289,13 +325,7 @@
                                     </div>
 
                                     <!-- Finalizar Venda -->
-                                    <form id="form-venda" class="space-y-6">
-                                        <div>
-                                            <label for="forma-pagamento" class="block text-sm font-medium text-gray-700 mb-1">Forma de Pagamento</label>
-                                            <select id="forma-pagamento" class="w-full p-2 border border-gray-300 rounded-lg" required><option value="" disabled selected>Selecione</option><option>Dinheiro</option><option>Pix</option><option>Cartão</option></select>
-                                        </div>
-                                        <button type="submit" class="w-full flex justify-center items-center bg-purple-600 text-white py-3 px-4 rounded-lg hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition-transform transform hover:scale-105"><i class="fas fa-check-circle mr-2"></i> Finalizar e Registrar Venda</button>
-                                    </form>
+                                    <button type="button" id="open-summary-btn" class="w-full flex justify-center items-center bg-purple-600 text-white py-3 px-4 rounded-lg hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition-transform transform hover:scale-105"><i class="fas fa-check-circle mr-2"></i> Fechar Pedido</button>
                                 </div>
                             </div>
                             <div id="tab-despesa-content" class="registro-tab-content hidden">
@@ -454,6 +484,7 @@
             unsubProdutos = onSnapshot(query(produtosRef, orderBy("nome", "asc")), snap => {
                 currentProdutos = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 renderProdutosPage(currentProdutos);
+                loadingOverlay.classList.add('hidden');
             });
         }
         
@@ -554,9 +585,8 @@
             }
         });
 
-        document.getElementById('form-venda').addEventListener('submit', async e => { 
-            e.preventDefault(); 
-            const formaPagamento = e.target['forma-pagamento'].value;
+        document.getElementById('finalize-order-btn').addEventListener('click', async () => { 
+            const formaPagamento = document.getElementById('summary-forma-pagamento').value;
             
             if (currentOrderItems.length === 0) {
                 alert('Adicione pelo menos um item ao pedido.');
@@ -580,7 +610,8 @@
                 
                 currentOrderItems = [];
                 renderCurrentOrder();
-                e.target.reset(); 
+                document.getElementById('summary-forma-pagamento').value = '';
+                document.getElementById('order-summary-modal').classList.add('hidden');
                 showSuccessMessage();
             } catch (error) {
                 console.error("Erro ao adicionar venda:", error);
@@ -1040,7 +1071,7 @@
             tabVendaContent.classList.add('hidden');
         });
 
-        // --- Lógica das Abas de Produtos cadast ---
+        // --- Lógica das Abas de Produtos ---
         const productTabs = document.querySelectorAll('.product-tab');
         const productLists = document.querySelectorAll('.product-list');
 
@@ -1059,6 +1090,38 @@
                 });
             });
         });
+        
+        // --- Lógica do Modal de Venda ---
+        const openSummaryBtn = document.getElementById('open-summary-btn');
+        const orderSummaryModal = document.getElementById('order-summary-modal');
+        const orderSummaryCancelBtn = document.getElementById('order-summary-cancel-btn');
+        const orderSummaryList = document.getElementById('order-summary-list');
+        const orderSummaryTotal = document.getElementById('order-summary-total');
+
+        openSummaryBtn.addEventListener('click', () => {
+            if (currentOrderItems.length === 0) {
+                alert('Adicione pelo menos um item ao pedido para continuar.');
+                return;
+            }
+            orderSummaryList.innerHTML = '';
+            let total = 0;
+            currentOrderItems.forEach(item => {
+                orderSummaryList.innerHTML += `
+                    <div class="flex justify-between items-center text-sm">
+                        <span>${item.quantidade}x ${item.nome}</span>
+                        <span>${formatCurrency(item.preco * item.quantidade)}</span>
+                    </div>
+                `;
+                total += item.preco * item.quantidade;
+            });
+            orderSummaryTotal.textContent = formatCurrency(total);
+            orderSummaryModal.classList.remove('hidden');
+        });
+
+        orderSummaryCancelBtn.addEventListener('click', () => {
+            orderSummaryModal.classList.add('hidden');
+        });
+
 
     </script>
 </body>
