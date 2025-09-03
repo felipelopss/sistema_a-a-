@@ -473,18 +473,17 @@
             
             unsubVendas = onSnapshot(query(vendasRef, orderBy("timestamp", "desc")), snap => {
                 currentVendas = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                renderFinancials(currentVendas, currentDespesas);
+                renderFinancials();
             });
 
             unsubDespesas = onSnapshot(query(despesasRef, orderBy("timestamp", "desc")), snap => {
                 currentDespesas = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                renderFinancials(currentVendas, currentDespesas);
+                renderFinancials();
             });
 
             unsubProdutos = onSnapshot(query(produtosRef, orderBy("nome", "asc")), snap => {
                 currentProdutos = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                renderProdutosPage(currentProdutos);
-                loadingOverlay.classList.add('hidden');
+                renderProdutos();
             });
         }
         
@@ -652,10 +651,15 @@
         }
         
         // --- Lógica de Renderização ---
-        function renderFinancials(vendas, despesas) {
-            renderFaturamentoSummary(vendas, despesas);
-            renderDashboard(vendas, despesas);
+        function renderFinancials() {
+            renderFaturamentoSummary(currentVendas, currentDespesas);
+            renderDashboard(currentVendas, currentDespesas);
             document.getElementById('filter-btn').click();
+            loadingOverlay.classList.add('hidden');
+        }
+        
+        function renderProdutos() {
+            renderProdutosPage(currentProdutos);
             loadingOverlay.classList.add('hidden');
         }
 
@@ -860,19 +864,39 @@
                     endDate.setHours(23, 59, 59, 999);
                     
                     const selectedDays = [...document.querySelectorAll('.filter-checkbox:checked')].map(cb => parseInt(cb.value));
-                    filteredVendas = currentVendas.filter(v => v.timestamp && v.timestamp.toDate() >= startDate && v.timestamp.toDate() <= endDate && selectedDays.includes(v.timestamp.toDate().getDay()));
-                    filteredDespesas = currentDespesas.filter(d => d.timestamp && d.timestamp.toDate() >= startDate && d.timestamp.toDate() <= endDate && selectedDays.includes(d.timestamp.toDate().getDay()));
+                    
+                    let vendasNaSemana = currentVendas.filter(v => {
+                        if (!v.timestamp) return false;
+                        const vendaDate = v.timestamp.toDate();
+                        return vendaDate >= startDate && vendaDate <= endDate;
+                    });
+                    let despesasNaSemana = currentDespesas.filter(d => {
+                        if (!d.timestamp) return false;
+                        const despesaDate = d.timestamp.toDate();
+                        return despesaDate >= startDate && despesaDate <= endDate;
+                    });
+
+                    if (selectedDays.length > 0) {
+                        filteredVendas = vendasNaSemana.filter(v => selectedDays.includes(v.timestamp.toDate().getDay()));
+                        filteredDespesas = despesasNaSemana.filter(d => selectedDays.includes(d.timestamp.toDate().getDay()));
+                    } else {
+                        filteredVendas = vendasNaSemana;
+                        filteredDespesas = despesasNaSemana;
+                    }
                     break;
                 case 'mensal':
-                    const currentMonth = now.getMonth();
-                    const currentYear = now.getFullYear();
-                    filteredVendas = currentVendas.filter(v => v.timestamp && v.timestamp.toDate().getMonth() === currentMonth && v.timestamp.toDate().getFullYear() === currentYear);
-                    filteredDespesas = currentDespesas.filter(d => d.timestamp && d.timestamp.toDate().getMonth() === currentMonth && d.timestamp.toDate().getFullYear() === currentYear);
+                    startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+                    endDate = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+                    endDate.setHours(23, 59, 59, 999);
+                    filteredVendas = currentVendas.filter(v => v.timestamp && v.timestamp.toDate() >= startDate && v.timestamp.toDate() <= endDate);
+                    filteredDespesas = currentDespesas.filter(d => d.timestamp && d.timestamp.toDate() >= startDate && d.timestamp.toDate() <= endDate);
                     break;
                 case 'anual':
-                    const year = now.getFullYear();
-                    filteredVendas = currentVendas.filter(v => v.timestamp && v.timestamp.toDate().getFullYear() === year);
-                    filteredDespesas = currentDespesas.filter(d => d.timestamp && d.timestamp.toDate().getFullYear() === year);
+                    startDate = new Date(now.getFullYear(), 0, 1);
+                    endDate = new Date(now.getFullYear(), 11, 31);
+                    endDate.setHours(23, 59, 59, 999);
+                    filteredVendas = currentVendas.filter(v => v.timestamp && v.timestamp.toDate() >= startDate && v.timestamp.toDate() <= endDate);
+                    filteredDespesas = currentDespesas.filter(d => d.timestamp && d.timestamp.toDate() >= startDate && d.timestamp.toDate() <= endDate);
                     break;
             }
             renderDetailedTables(filteredVendas, filteredDespesas);
@@ -1126,3 +1150,4 @@
     </script>
 </body>
 </html>
+
